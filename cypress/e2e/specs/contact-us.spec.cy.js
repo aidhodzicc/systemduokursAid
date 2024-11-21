@@ -39,4 +39,30 @@ describe('Contact us tests', () => {
       { matchCase: false }
     )
   })
+
+  it('Send message through contact us form without email insterted', () => {
+    // When
+    cy.get('a[href*="contact"]').should('be.visible').click()
+
+    // Then
+    cy.url().should('contain', 'contact_us')
+
+    // When
+    cy.get('[data-qa="name"]').should('be.visible').clear().type('Aid')
+    cy.get('[data-qa="subject"]').clear().type('Something')
+    cy.get('[data-qa="message"]').clear().type('Message')
+
+    // And
+    cy.get('[data-qa="submit-button"]').should('be.enabled').click()
+
+    // Then
+    cy.get('[data-qa="email"]')
+      .invoke('prop', 'validationMessage')
+      .should('eq', 'Please fill out this field.')
+
+    cy.get('input:invalid')
+      .should('be.visible')
+      .invoke('prop', 'validationMessage')
+      .should('eq', 'Please fill out this field.')
+  })
 })
