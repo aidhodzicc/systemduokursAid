@@ -1,6 +1,6 @@
 describe('Product tests', () => {
   beforeEach(() => {
-    cy.visit('https://automationexercise.com/')
+    cy.visit('/')
   })
 
   it('Find products on page', () => {

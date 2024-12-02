@@ -16,10 +16,10 @@ export class Page extends CypressPageObject {
     this.url = url
   }
 
-  /*public getNavigation() {
+  public getNavigation() {
     if (this.navigation == undefined) {
       this.navigation = new Navigation(this.url)
     }
     return this.navigation
-  }*/
+  }
 }

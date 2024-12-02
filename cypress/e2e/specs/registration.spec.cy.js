@@ -1,25 +1,23 @@
 /// <reference types="cypress" />
 
-import { registrationPage } from '../../utils/initialize'
+import { registrationPage, contactUsPage } from '../../utils/initialize'
 
 describe('Registration tests', () => {
-  let email
+  let newEmail
   beforeEach('Navigate to automationexercise', () => {
-    email = `aid${Date.now()}@example.com`
-    cy.visit('https://automationexercise.com/')
+    newEmail = `aid${Date.now()}@example.com`
+    cy.visit('/')
   })
 
   it('Navigate to registration form', () => {
     // When
-    registrationPage.navigateToRegistration()
+    registrationPage.getNavigation().visit()
 
     // Then
     cy.get('.signup-form').should('be.visible')
 
     // When
-    cy.get('[data-qa="signup-name"]').clear().type('Aid')
-    cy.get('[data-qa="signup-email"]').clear().type(email)
-    cy.get('[data-qa="signup-button"]').click()
+    registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
     cy.get('form[action*="signup"]').should('be.visible')
@@ -27,15 +25,13 @@ describe('Registration tests', () => {
 
   it('Succesfull registration', () => {
     // When
-    cy.get('a[href*="login"]').should('be.visible').click()
+    registrationPage.getNavigation().visit()
 
     // Then
     cy.get('.signup-form').should('be.visible')
 
     // When
-    cy.get('[data-qa="signup-name"]').clear().type('Aid')
-    cy.get('[data-qa="signup-email"]').clear().type(email)
-    cy.get('[data-qa="signup-button"]').click()
+    registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
     cy.get('form[action*="signup"]').should('be.visible')
@@ -44,7 +40,7 @@ describe('Registration tests', () => {
     cy.get('input[type="radio"]').should('be.visible').check('Mr')
     cy.get('[data-qa="email"]')
       .should('be.disabled')
-      .and('have.attr', 'value', email)
+      .and('have.attr', 'value', newEmail)
     cy.get('[data-qa="password"]').clear().type('Test123')
     cy.get('[data-qa="days"]').select(13)
     cy.get('[data-qa="months"]').select(2)
@@ -71,15 +67,13 @@ describe('Registration tests', () => {
 
   it('Succesfull login after registration', () => {
     // When
-    cy.get('a[href*="login"]').should('be.visible').click()
+    registrationPage.getNavigation().visit()
 
     // Then
     cy.get('.signup-form').should('be.visible')
 
     // When
-    cy.get('[data-qa="signup-name"]').clear().type('Aid')
-    cy.get('[data-qa="signup-email"]').clear().type(email)
-    cy.get('[data-qa="signup-button"]').click()
+    registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
     cy.get('form[action*="signup"]').should('be.visible')
@@ -88,7 +82,7 @@ describe('Registration tests', () => {
     cy.get('input[type="radio"]').should('be.visible').check('Mr')
     cy.get('[data-qa="email"]')
       .should('be.disabled')
-      .and('have.attr', 'value', email)
+      .and('have.attr', 'value', newEmail)
     cy.get('[data-qa="password"]').clear().type('Test123')
     cy.get('[data-qa="days"]').select(13)
     cy.get('[data-qa="months"]').select(2)
@@ -116,7 +110,7 @@ describe('Registration tests', () => {
     cy.get('[data-qa="continue-button"]').should('be.visible').click()
     cy.get('a[href="/logout"').should('be.visible').click()
     cy.get('a[href*="login"]').should('be.visible').click()
-    cy.get('[data-qa="login-email"]').clear().type(email)
+    cy.get('[data-qa="login-email"]').clear().type(newEmail)
     cy.get('[data-qa="login-password"]').clear().type('Test123')
     cy.get('[data-qa="login-button"]').should('be.visible').click()
 
@@ -127,15 +121,13 @@ describe('Registration tests', () => {
 
   it('Registration with empty one of the required fields', () => {
     // When
-    cy.get('a[href*="login"]').should('be.visible').click()
+    registrationPage.getNavigation().visit()
 
     // Then
     cy.get('.signup-form').should('be.visible')
 
     // When
-    cy.get('[data-qa="signup-name"]').clear().type('Aid')
-    cy.get('[data-qa="signup-email"]').clear().type(email)
-    cy.get('[data-qa="signup-button"]').click()
+    registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
     cy.get('form[action*="signup"]').should('be.visible')
@@ -144,7 +136,7 @@ describe('Registration tests', () => {
     cy.get('input[type="radio"]').should('be.visible').check('Mr')
     cy.get('[data-qa="email"]')
       .should('be.disabled')
-      .and('have.attr', 'value', email)
+      .and('have.attr', 'value', newEmail)
     cy.get('[data-qa="password"]').clear().type('Test123')
     cy.get('[data-qa="days"]').select(13)
     cy.get('[data-qa="months"]').select(2)

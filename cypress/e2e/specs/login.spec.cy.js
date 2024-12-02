@@ -1,11 +1,11 @@
-import { registrationPage } from '../../utils/initialize'
+import { registrationPage, loginPage } from '../../utils/initialize'
 
 describe('Login tests', () => {
   let email
 
   beforeEach(() => {
     email = `aid${Date.now()}@example.com`
-    cy.visit('https://automationexercise.com/')
+    cy.visit('/')
     // When
     cy.get('a[href*="login"]').should('be.visible').click()
 
