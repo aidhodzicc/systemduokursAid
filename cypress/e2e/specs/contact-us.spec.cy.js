@@ -1,8 +1,12 @@
 /// <reference types="cypress" />
 
 describe('Contact us tests', () => {
+  let messageBody
   beforeEach('Visit page', () => {
-    cy.visit('https://automationexercise.com/')
+    cy.fixture('example.json').then(($data) => {
+      messageBody = $data['message']
+    })
+    cy.visit('/')
   })
 
   it('Navigate to contact us form', () => {
@@ -28,7 +32,7 @@ describe('Contact us tests', () => {
     cy.get('[data-qa="name"]').should('be.visible').clear().type('Aid')
     cy.get('[data-qa="email"]').clear().type('aid@example.com')
     cy.get('[data-qa="subject"]').clear().type('Something')
-    cy.get('[data-qa="message"]').clear().type('Message')
+    cy.get('[data-qa="message"]').clear().type(messageBody)
 
     // And
     cy.get('[data-qa="submit-button"]').should('be.enabled').click()
