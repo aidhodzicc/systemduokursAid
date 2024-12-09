@@ -1,7 +1,9 @@
 {
   "scripts": {
     "cy:open": "cypress open",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run",
+    "cy:open:stage": "cypress open --config baseUrl=https://www.automationexercise.stage.com",
+    "cy:open:devlop": "cypress open --config baseUrl=https://www.automationexercise.dev.com"
   },
   "devDependencies": {
     "@types/node": "^14.18.21",

@@ -23,6 +23,14 @@ export class Page extends CypressPageObject {
     return this.navigation
   }
 
+  public logoutIfLoggedIn() {
+    this.navigationBar.then(($logged) => {
+      if ($logged.find('.fa-user').length > 0) {
+        this.logoutButton.should('be.visible').click()
+      }
+    })
+  }
+
   public shouldToastBe(options: {
     visible: boolean
     success: boolean
@@ -41,5 +49,13 @@ export class Page extends CypressPageObject {
       options.withText &&
         this.cy.get('.toast-error').should('contain.text', options.withText)
     }
+  }
+
+  get navigationBar() {
+    return cy.get('.navbar-nav')
+  }
+
+  get logoutButton() {
+    return cy.get('a[href="/logout"]')
   }
 }

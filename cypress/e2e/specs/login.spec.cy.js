@@ -1,72 +1,63 @@
 import { registrationPage, loginPage } from '../../utils/initialize'
 
 describe('Login tests', () => {
-  let email
+  let newEmail
+  let credentials
 
   beforeEach(() => {
-    email = `aid${Date.now()}@example.com`
+    newEmail = `aid${Date.now()}@example.com`
+    credentials = Cypress.env('credentials')
     cy.visit('/')
-    // When
-    registrationPage.getNavigation().visit()
-
-    // Then
-    registrationPage.shouldSignupFormBeVisible({ visible: true })
-    // When
-    registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
-
-    // Then
-    registrationPage.shouldRegistrationFormBeVisible({ visible: true })
-
-    // When
-    registrationPage.registerUser({
-      title: 'Mr',
-      password: 'Test123',
-      dayOfBirth: 13,
-      monthOfBirth: 2,
-      yearOfBirth: '1997',
-      newsletter: true,
-      specialOffers: true,
-      firstName: 'Aid',
-      lastName: 'Hodzic',
-      company: 'SystemDuo',
-      address: 'Zmaja od Bosne',
-      country: 'Canada',
-      state: 'Sarajevo',
-      city: 'Sarajevo',
-      zipcode: '71000',
-      mobileNumber: '061123123',
-    })
-    // Then
-    registrationPage.shouldUserBeRegistered({
-      success: true,
-      successMessage: 'Account Created!',
-    })
-    cy.get('[data-qa="continue-button"]').should('be.visible').click()
-    cy.get('a[href="/logout"').should('be.visible').click()
-    cy.get('a[href*="login"]').should('be.visible').click()
+    registrationPage
+      .registerUserApi({
+        name: 'Aid',
+        email: newEmail,
+        password: credentials.password,
+        title: 'Mr',
+        birth_date: 13,
+        birth_month: 2,
+        birth_year: '1997',
+        firstName: 'Aid',
+        lastName: 'Hodzic',
+        company: 'SystemDuo',
+        address1: 'Zmaja od Bosne',
+        address2: 'Test',
+        country: 'Canada',
+        zipCode: '71000',
+        state: 'Sarajevo',
+        city: 'Sarajevo',
+        mobile_number: '12234341',
+      })
+      .then(($data) => {
+        expect(JSON.parse($data.body).responseCode).to.eq(201)
+        expect(JSON.parse($data.body).message).to.eq('User created!')
+      })
+    loginPage.getNavigation().visit()
   })
 
   it('Login', () => {
     // When
-    cy.get('[data-qa="login-email"]').clear().type(email)
-    cy.get('[data-qa="login-password"]').clear().type('Test123')
-    cy.get('[data-qa="login-button"]').should('be.visible').click()
+    loginPage.inputEmailAndPassword({
+      email: newEmail,
+      password: credentials.password,
+    })
 
     // Then
-    cy.get('a').contains('Logged in as Aid')
-    cy.get('a[href="/logout"]').should('be.visible')
+    loginPage.shouldBeLoggedIn({ success: true })
   })
 
   it('Login unsuccesfull', () => {
     // When
-    cy.get('[data-qa="login-email"]').clear().type(email)
-    cy.get('[data-qa="login-password"]').clear().type('Test')
-    cy.get('[data-qa="login-button"]').should('be.visible').click()
+    loginPage.inputEmailAndPassword({
+      email: newEmail,
+      password: 'Test',
+    })
 
     // Then
-    cy.get('.login-form')
-      .find('p[style="color: red;"]')
-      .should('be.visible')
-      .and('contain', 'Your email or password is incorrect!')
+    loginPage.shouldBeLoggedIn({ success: false })
+    loginPage.shouldErrorMessageBe({
+      visible: true,
+      withText: 'Your email or password is incorrect!',
+    })
   })
 })

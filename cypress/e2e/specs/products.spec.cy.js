@@ -1,6 +1,28 @@
+import { productsPage } from '../../utils/initialize'
+
 describe('Product tests', () => {
   beforeEach(() => {
     cy.visit('/')
+    productsPage.getAllProductsList().its('status').should('eq', 200)
+
+    productsPage.getAllProductsList().then(($response) => {
+      console.log(JSON.parse($response.body).products)
+      expect(JSON.parse($response.body).products[1].name).to.eq('Men Tshirt')
+      expect($response.status).to.eq(200)
+    })
+
+    productsPage
+      .getSearchProducts({ productName: 'Winter Top' })
+      .its('status')
+      .should('eq', 200)
+    productsPage
+      .getSearchProducts({ productName: 'Winter Top' })
+      .then(($response) => {
+        const product = JSON.parse($response.body).products
+        console.log(JSON.parse($response.body))
+        expect(product[0].name).to.eq('Winter Top')
+        expect(product[0].price).to.eq('Rs. 600')
+      })
   })
 
   it('Find products on page', () => {

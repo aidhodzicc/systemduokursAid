@@ -95,10 +95,9 @@ export class RegistrationPage extends Page {
       .should('eq', options.errorMessage)
   }
 
-  //
-  //
-  //
-  //
+  confimRegistration = () => {
+    this.continueButton.should('be.visible').click()
+  }
 
   registerUserApi = (options: {
     name: string
@@ -243,5 +242,9 @@ export class RegistrationPage extends Page {
 
   get accountCreatedMessage() {
     return cy.get('[data-qa="account-created"]')
+  }
+
+  get continueButton() {
+    return cy.get('[data-qa="continue-button"]')
   }
 }

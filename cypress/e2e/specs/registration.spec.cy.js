@@ -1,6 +1,10 @@
 /// <reference types="cypress" />
 
-import { registrationPage, contactUsPage } from '../../utils/initialize'
+import {
+  registrationPage,
+  contactUsPage,
+  loginPage,
+} from '../../utils/initialize'
 
 describe('Registration tests', () => {
   let newEmail
@@ -121,16 +125,16 @@ describe('Registration tests', () => {
     })
 
     // When
-    cy.get('[data-qa="continue-button"]').should('be.visible').click()
-    cy.get('a[href="/logout"').should('be.visible').click()
-    cy.get('a[href*="login"]').should('be.visible').click()
-    cy.get('[data-qa="login-email"]').clear().type(newEmail)
-    cy.get('[data-qa="login-password"]').clear().type('Test123')
-    cy.get('[data-qa="login-button"]').should('be.visible').click()
+    registrationPage.confimRegistration()
+    registrationPage.logoutIfLoggedIn()
+    loginPage.getNavigation().visit()
+    loginPage.inputEmailAndPassword({
+      email: newEmail,
+      password: credentials.password,
+    })
 
     // Then
-    cy.get('a').contains('Logged in as Aid')
-    cy.get('a[href="/logout"]').should('be.visible')
+    loginPage.shouldBeLoggedIn({ success: true })
   })
 
   it('Registration with empty one of the required fields', () => {
