@@ -1,0 +1,12 @@
+{
+  "English": {
+    "accountCreated": "Account Created!",
+    "errorMessage": "Error"
+  },
+  "Spanish": {
+    "accountCreated": "Cuenta creada"
+  },
+  "German": {
+    "accountCreated": "Konto erstellt"
+  }
+}

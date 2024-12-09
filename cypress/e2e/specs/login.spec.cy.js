@@ -7,46 +7,40 @@ describe('Login tests', () => {
     email = `aid${Date.now()}@example.com`
     cy.visit('/')
     // When
-    cy.get('a[href*="login"]').should('be.visible').click()
+    registrationPage.getNavigation().visit()
 
     // Then
-    cy.get('.signup-form').should('be.visible')
+    registrationPage.shouldSignupFormBeVisible({ visible: true })
+    // When
+    registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
+
+    // Then
+    registrationPage.shouldRegistrationFormBeVisible({ visible: true })
 
     // When
-    cy.get('[data-qa="signup-name"]').clear().type('Aid')
-    cy.get('[data-qa="signup-email"]').clear().type(email)
-    cy.get('[data-qa="signup-button"]').click()
-
+    registrationPage.registerUser({
+      title: 'Mr',
+      password: 'Test123',
+      dayOfBirth: 13,
+      monthOfBirth: 2,
+      yearOfBirth: '1997',
+      newsletter: true,
+      specialOffers: true,
+      firstName: 'Aid',
+      lastName: 'Hodzic',
+      company: 'SystemDuo',
+      address: 'Zmaja od Bosne',
+      country: 'Canada',
+      state: 'Sarajevo',
+      city: 'Sarajevo',
+      zipcode: '71000',
+      mobileNumber: '061123123',
+    })
     // Then
-    cy.get('form[action*="signup"]').should('be.visible')
-
-    // When
-    cy.get('input[type="radio"]').should('be.visible').check('Mr')
-    cy.get('[data-qa="email"]')
-      .should('be.disabled')
-      .and('have.attr', 'value', email)
-    cy.get('[data-qa="password"]').clear().type('Test123')
-    cy.get('[data-qa="days"]').select(13)
-    cy.get('[data-qa="months"]').select(2)
-    cy.get('[data-qa="years"]').select('1997')
-    cy.get('#newsletter').check()
-    cy.get('#optin').check()
-    cy.get('[data-qa="first_name"]').clear().type('Aid')
-    cy.get('[data-qa="last_name"]').clear().type('Hodzic')
-    cy.get('[data-qa="company"]').clear().type('QA')
-    cy.get('[data-qa="address"]').clear().type('Adresa')
-    cy.get('[data-qa="country"]').select('Canada')
-    cy.get('[data-qa="state"]').clear().type('Sarajevo')
-    cy.get('[data-qa="city"]').clear().type('Sarajevo')
-    cy.get('[data-qa="zipcode"]').clear().type('71000')
-    cy.get('[data-qa="mobile_number"]').clear().type('123456789')
-
-    cy.get('[data-qa="create-account"]').should('be.visible').click()
-
-    // Then
-    cy.get('[data-qa="account-created"]')
-      .should('be.visible')
-      .and('contain.text', 'Account Created!')
+    registrationPage.shouldUserBeRegistered({
+      success: true,
+      successMessage: 'Account Created!',
+    })
     cy.get('[data-qa="continue-button"]').should('be.visible').click()
     cy.get('a[href="/logout"').should('be.visible').click()
     cy.get('a[href*="login"]').should('be.visible').click()

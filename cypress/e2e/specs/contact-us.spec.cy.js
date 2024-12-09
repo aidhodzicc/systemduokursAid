@@ -1,10 +1,20 @@
 /// <reference types="cypress" />
 
+import { contactUsPage } from '../../utils/initialize'
+
 describe('Contact us tests', () => {
   let messageBody
+  let englishData
+  let spanishData
+  let germanData
   beforeEach('Visit page', () => {
     cy.fixture('example.json').then(($data) => {
       messageBody = $data['message']
+    })
+    cy.fixture('account-created-lang.json').then(($data) => {
+      englishData = $data['English']
+      spanishData = $data['Spanish']
+      germanData = $data['German']
     })
     cy.visit('/')
   })
@@ -21,7 +31,7 @@ describe('Contact us tests', () => {
     cy.get('h2').eq(1).should('be.visible') // get in touch element
   })
 
-  it('Send message through contact us form', () => {
+  it.only('Send message through contact us form', () => {
     // When
     cy.get('a[href*="contact"]').should('be.visible').click()
 
@@ -31,7 +41,7 @@ describe('Contact us tests', () => {
     // When
     cy.get('[data-qa="name"]').should('be.visible').clear().type('Aid')
     cy.get('[data-qa="email"]').clear().type('aid@example.com')
-    cy.get('[data-qa="subject"]').clear().type('Something')
+    cy.get('[data-qa="subject"]').clear().type(spanishData.accountCreated)
     cy.get('[data-qa="message"]').clear().type(messageBody)
 
     // And

@@ -4,8 +4,27 @@ import { registrationPage, contactUsPage } from '../../utils/initialize'
 
 describe('Registration tests', () => {
   let newEmail
+  let invalidEmail
+  let credentials
+  let adminCredentials
+  let creditCardInfo
+  let englishData
+  let spanishData
+  let germanData
   beforeEach('Navigate to automationexercise', () => {
+    adminCredentials = Cypress.env('credentials').admin
+    creditCardInfo = Cypress.env('credentials').creditCardInfo
+    // adminCredentials.password pristup admin password vrijednosti
+    // adminCredentials.email pristup admin email vrijednosti
+    // creditCardInfo.cardNumber pristup broju kartice iz cypress config.ts
+    cy.fixture('account-created-lang.json').then(($data) => {
+      englishData = $data['English']
+      spanishData = $data['Spanish']
+      germanData = $data['German']
+    })
+    credentials = Cypress.env('credentials')
     newEmail = `aid${Date.now()}@example.com`
+    invalidEmail = `aid${Date.now()}gmail.com`
     cy.visit('/')
   })
 
@@ -14,13 +33,13 @@ describe('Registration tests', () => {
     registrationPage.getNavigation().visit()
 
     // Then
-    cy.get('.signup-form').should('be.visible')
+    registrationPage.shouldSignupFormBeVisible({ visible: true })
 
     // When
     registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
-    cy.get('form[action*="signup"]').should('be.visible')
+    registrationPage.shouldRegistrationFormBeVisible({ visible: true })
   })
 
   it('Succesfull registration', () => {
@@ -28,41 +47,39 @@ describe('Registration tests', () => {
     registrationPage.getNavigation().visit()
 
     // Then
-    cy.get('.signup-form').should('be.visible')
+    registrationPage.shouldSignupFormBeVisible({ visible: true })
 
     // When
     registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
-    cy.get('form[action*="signup"]').should('be.visible')
+    registrationPage.shouldRegistrationFormBeVisible({ visible: true })
 
     // When
-    cy.get('input[type="radio"]').should('be.visible').check('Mr')
-    cy.get('[data-qa="email"]')
-      .should('be.disabled')
-      .and('have.attr', 'value', newEmail)
-    cy.get('[data-qa="password"]').clear().type('Test123')
-    cy.get('[data-qa="days"]').select(13)
-    cy.get('[data-qa="months"]').select(2)
-    cy.get('[data-qa="years"]').select('1997')
-    cy.get('#newsletter').check()
-    cy.get('#optin').check()
-    cy.get('[data-qa="first_name"]').clear().type('Aid')
-    cy.get('[data-qa="last_name"]').clear().type('Hodzic')
-    cy.get('[data-qa="company"]').clear().type('QA')
-    cy.get('[data-qa="address"]').clear().type('Adresa')
-    cy.get('[data-qa="country"]').select('Canada')
-    cy.get('[data-qa="state"]').clear().type('Sarajevo')
-    cy.get('[data-qa="city"]').clear().type('Sarajevo')
-    cy.get('[data-qa="zipcode"]').clear().type('71000')
-    cy.get('[data-qa="mobile_number"]').clear().type('123456789')
-
-    cy.get('[data-qa="create-account"]').should('be.visible').click()
+    registrationPage.registerUser({
+      title: 'Mr',
+      password: credentials.password,
+      dayOfBirth: 13,
+      monthOfBirth: 2,
+      yearOfBirth: '1997',
+      newsletter: true,
+      specialOffers: true,
+      firstName: 'Aid',
+      lastName: 'Hodzic',
+      company: 'SystemDuo',
+      address: 'Zmaja od Bosne',
+      country: 'Canada',
+      state: 'Sarajevo',
+      city: 'Sarajevo',
+      zipcode: '71000',
+      mobileNumber: '061123123',
+    })
 
     // Then
-    cy.get('[data-qa="account-created"]')
-      .should('be.visible')
-      .and('contain.text', 'Account Created!')
+    registrationPage.shouldUserBeRegistered({
+      success: true,
+      successMessage: englishData.accountCreated,
+    })
   })
 
   it('Succesfull login after registration', () => {
@@ -70,41 +87,38 @@ describe('Registration tests', () => {
     registrationPage.getNavigation().visit()
 
     // Then
-    cy.get('.signup-form').should('be.visible')
-
+    registrationPage.shouldSignupFormBeVisible({ visible: true })
     // When
     registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
-    cy.get('form[action*="signup"]').should('be.visible')
+    registrationPage.shouldRegistrationFormBeVisible({ visible: true })
 
     // When
-    cy.get('input[type="radio"]').should('be.visible').check('Mr')
-    cy.get('[data-qa="email"]')
-      .should('be.disabled')
-      .and('have.attr', 'value', newEmail)
-    cy.get('[data-qa="password"]').clear().type('Test123')
-    cy.get('[data-qa="days"]').select(13)
-    cy.get('[data-qa="months"]').select(2)
-    cy.get('[data-qa="years"]').select('1997')
-    cy.get('#newsletter').check()
-    cy.get('#optin').check()
-    cy.get('[data-qa="first_name"]').clear().type('Aid')
-    cy.get('[data-qa="last_name"]').clear().type('Hodzic')
-    cy.get('[data-qa="company"]').clear().type('QA')
-    cy.get('[data-qa="address"]').clear().type('Adresa')
-    cy.get('[data-qa="country"]').select('Canada')
-    cy.get('[data-qa="state"]').clear().type('Sarajevo')
-    cy.get('[data-qa="city"]').clear().type('Sarajevo')
-    cy.get('[data-qa="zipcode"]').clear().type('71000')
-    cy.get('[data-qa="mobile_number"]').clear().type('123456789')
-
-    cy.get('[data-qa="create-account"]').should('be.visible').click()
+    registrationPage.registerUser({
+      title: 'Mr',
+      password: 'Test123',
+      dayOfBirth: 13,
+      monthOfBirth: 2,
+      yearOfBirth: '1997',
+      newsletter: true,
+      specialOffers: true,
+      firstName: 'Aid',
+      lastName: 'Hodzic',
+      company: 'SystemDuo',
+      address: 'Zmaja od Bosne',
+      country: 'Canada',
+      state: 'Sarajevo',
+      city: 'Sarajevo',
+      zipcode: '71000',
+      mobileNumber: '061123123',
+    })
 
     // Then
-    cy.get('[data-qa="account-created"]')
-      .should('be.visible')
-      .and('contain.text', 'Account Created!')
+    registrationPage.shouldUserBeRegistered({
+      success: true,
+      successMessage: 'Account Created!',
+    })
 
     // When
     cy.get('[data-qa="continue-button"]').should('be.visible').click()
@@ -124,39 +138,52 @@ describe('Registration tests', () => {
     registrationPage.getNavigation().visit()
 
     // Then
-    cy.get('.signup-form').should('be.visible')
-
+    registrationPage.shouldSignupFormBeVisible({ visible: true })
     // When
     registrationPage.populateEmailandName({ email: newEmail, name: 'Aid' })
 
     // Then
-    cy.get('form[action*="signup"]').should('be.visible')
+    registrationPage.shouldRegistrationFormBeVisible({ visible: true })
 
     // When
-    cy.get('input[type="radio"]').should('be.visible').check('Mr')
-    cy.get('[data-qa="email"]')
-      .should('be.disabled')
-      .and('have.attr', 'value', newEmail)
-    cy.get('[data-qa="password"]').clear().type('Test123')
-    cy.get('[data-qa="days"]').select(13)
-    cy.get('[data-qa="months"]').select(2)
-    cy.get('[data-qa="years"]').select('1997')
-    cy.get('#newsletter').check()
-    cy.get('#optin').check()
-    cy.get('[data-qa="last_name"]').clear().type('Hodzic')
-    cy.get('[data-qa="company"]').clear().type('QA')
-    cy.get('[data-qa="address"]').clear().type('Adresa')
-    cy.get('[data-qa="country"]').select('Canada')
-    cy.get('[data-qa="state"]').clear().type('Sarajevo')
-    cy.get('[data-qa="city"]').clear().type('Sarajevo')
-    cy.get('[data-qa="zipcode"]').clear().type('71000')
-    cy.get('[data-qa="mobile_number"]').clear().type('123456789')
-
-    cy.get('[data-qa="create-account"]').should('be.visible').click()
+    registrationPage.registerUser({
+      title: 'Mr',
+      password: 'Test123',
+      dayOfBirth: 13,
+      monthOfBirth: 2,
+      yearOfBirth: '1997',
+      newsletter: true,
+      specialOffers: true,
+      lastName: 'Hodzic',
+      company: 'SystemDuo',
+      address: 'Zmaja od Bosne',
+      country: 'Canada',
+      state: 'Sarajevo',
+      city: 'Sarajevo',
+      zipcode: '71000',
+      mobileNumber: '061123123',
+    })
 
     // Then
-    cy.get('[data-qa="first_name"]')
-      .invoke('prop', 'validationMessage')
-      .should('eq', 'Please fill out this field.')
+    registrationPage.shouldErrorMessageBe({
+      errorMessage: 'Please fill out this field.',
+      onField: 'first_name',
+    })
+  })
+
+  it('Try to access registration form with invalid email format', () => {
+    // When
+    registrationPage.getNavigation().visit()
+
+    // Then
+    registrationPage.shouldSignupFormBeVisible({ visible: true })
+    // When
+    registrationPage.populateEmailandName({ email: invalidEmail, name: 'Aid' })
+
+    // Then
+    registrationPage.shouldErrorMessageBe({
+      errorMessage: `Please include an '@' in the email address. '${invalidEmail}' is missing an '@'.`,
+      onField: 'signup-email',
+    })
   })
 })
